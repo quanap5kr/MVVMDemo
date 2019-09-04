@@ -113,5 +113,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetworkFlow\NetworkFlow.csproj">
+      <Project>{98f7bf8f-4d58-4b89-8720-98e7e5a6078f}</Project>
+      <Name>NetworkFlow</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
