@@ -1,0 +1,65 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        xmlns:Layers="clr-namespace:NetworkFlow.Layers;assembly=NetworkFlow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel>
+
+        <StackPanel>
+            <Button Content="Add CNN" Click="Add_CNN"></Button>
+            <Button Content="Add FC" Click="Add_FC"></Button>
+            <Button Content="Add DropOut" Click="Add_DropOut"></Button>
+            <Button Content="Add RNN" Click="Add_RNN"></Button>
+            <Button Content="Add Flatten" Click="Add_Flatten"></Button>
+            <Button Content="Add Pooling" Click="Add_Pooling"></Button>
+        </StackPanel>
+
+        <Canvas x:Name="net_canvas" Background="PapayaWhip" Height="450" Width="800">
+            <!--<Grid>
+                <Layers:LayerCNN/>
+                <Layers:LayerFC/>
+            </Grid>-->
+            <ItemsControl ItemsSource="{Binding CurrentConnection}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="Bisque"  Height="0" Width="0">
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Line X1="{Binding From.X}" Y1="{Binding From.Y}"
+                              X2="{Binding To.X}" Y2="{Binding To.Y}"
+                              Stroke="{Binding Stroke}"
+                              StrokeThickness="{Binding StrokeThickness}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding Connections}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="NavajoWhite"  Height="0" Width="0">
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Line X1="{Binding From.X}" Y1="{Binding From.Y}"
+                              X2="{Binding To.X}" Y2="{Binding To.Y}"
+                              Stroke="{Binding Stroke}"
+                              StrokeThickness="{Binding StrokeThickness}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+        </Canvas>
+
+
+
+    </DockPanel>
+</Window>
