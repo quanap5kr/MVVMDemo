@@ -11,11 +11,12 @@
 
         <StackPanel>
             <Button Content="Add CNN" Click="Add_CNN"></Button>
-            <Button Content="Add FC" Click="Add_FC"></Button>
             <Button Content="Add DropOut" Click="Add_DropOut"></Button>
-            <Button Content="Add RNN" Click="Add_RNN"></Button>
+            <Button Content="Add FC" Click="Add_FC"></Button>
             <Button Content="Add Flatten" Click="Add_Flatten"></Button>
             <Button Content="Add Pooling" Click="Add_Pooling"></Button>
+            <Button Content="Add RNN" Click="Add_RNN"></Button>
+            
         </StackPanel>
 
         <Canvas x:Name="net_canvas" Background="PapayaWhip" Height="450" Width="800">
@@ -23,10 +24,10 @@
                 <Layers:LayerCNN/>
                 <Layers:LayerFC/>
             </Grid>-->
-            <ItemsControl ItemsSource="{Binding CurrentConnection}">
+            <ItemsControl ItemsSource="{Binding CurrentConnection}" Panel.ZIndex="+2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas Background="Bisque"  Height="0" Width="0">
+                        <Canvas x:Name="net_line" Background="Bisque"  Height="0" Width="0">
                         </Canvas>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
@@ -40,7 +41,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <ItemsControl ItemsSource="{Binding Connections}">
+            <ItemsControl ItemsSource="{Binding Connections}" Panel.ZIndex="+2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas Background="NavajoWhite"  Height="0" Width="0">
@@ -52,6 +53,7 @@
                         <Line X1="{Binding From.X}" Y1="{Binding From.Y}"
                               X2="{Binding To.X}" Y2="{Binding To.Y}"
                               Stroke="{Binding Stroke}"
+                              
                               StrokeThickness="{Binding StrokeThickness}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

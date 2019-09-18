@@ -1,4 +1,6 @@
-﻿using NetworkFlow.Layers;
+﻿using NetworkFlow.Connections;
+using NetworkFlow.Layers;
+using NetworkFlow.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,8 +28,10 @@ namespace WpfApp1
         private Point firstPosition = new Point(30, 30);
         private Point secondPosition = new Point(100, 100);
         private bool isDragging = false;
-        private int indexCurrentLine= -1;
-        private int numberOfNode = 0;
+        private int indexCurrentLine = -1;
+        private int numberOfNode = -1;
+        
+        public ObservableCollection<NodeViewModel> Nodes {get; private set;}
         public ObservableCollection<Line> CurrentConnection { get; private set; }
         public ObservableCollection<Line> Connections { get; private set; }
         public MainWindow()
@@ -35,6 +39,7 @@ namespace WpfApp1
             InitializeComponent();
             CurrentConnection = new ObservableCollection<Line>();
             Connections = new ObservableCollection<Line>();
+            Nodes = new ObservableCollection<NodeViewModel>();
 
             //    CurrentConnection = new ObservableCollection<Line>
             //{
@@ -46,10 +51,10 @@ namespace WpfApp1
 
             DataContext = this;
             // for handle mouse event
-            //this.MouseLeftButtonUp += new MouseButtonEventHandler(GridNetwork_MouseLeftButtonUp);
-            //this.MouseMove += new MouseEventHandler(GridNetwork_MouseMove);
-            //this.MouseLeftButtonDown += new MouseButtonEventHandler(GridNetwork_MouseLeftButtonDown);
-            //this.MouseRightButtonDown += new MouseButtonEventHandler(GridNetwork_MouseRightButtonDown);
+            this.MouseLeftButtonUp += new MouseButtonEventHandler(GridNetwork_MouseLeftButtonUp);
+            this.MouseMove += new MouseEventHandler(GridNetwork_MouseMove);
+            this.MouseLeftButtonDown += new MouseButtonEventHandler(GridNetwork_MouseLeftButtonDown);
+            this.MouseRightButtonDown += new MouseButtonEventHandler(GridNetwork_MouseRightButtonDown);
         }
 
         private void GridNetwork_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -80,50 +85,108 @@ namespace WpfApp1
                     CurrentConnection.RemoveAt(indexCurrentLine-1);
                 }
                 CurrentConnection.Add(currentLine);
+            }
+            else
+            {
+                if (Nodes.Count()!=0)
+                {
+                    //CurrentConnection.Add(new Line
+                    //{
+                    //    From = new Point(firstPosition.X, firstPosition.Y),
+                    //    To = new Point(Nodes[0].X, Nodes[0].Y),
+                    //    Stroke = Brushes.BlueViolet,
+                    //    StrokeThickness = 3
+                    //});
+
+                    //var currentLine = new Line { From = new Point(Nodes[0].X, Nodes[0].Y + Nodes[0].ActualHeight/ 2),
+                    //    To = new Point(secondPosition.X, secondPosition.Y),
+                    //    Stroke = Brushes.BlueViolet, StrokeThickness = 3 };
+                    //if (indexCurrentLine >= 1)
+                    //{
+                    //    Debug.WriteLine(indexCurrentLine);
+                    //    CurrentConnection.RemoveAt(indexCurrentLine - 1);
+                    //}
+                    //CurrentConnection.Add(currentLine);
+                    //for (int i = 0; i < Connections.Count(); i++)
+                    //{
+                    //    var currentLine = new Line
+                    //    {
+                    //        From = new Point(Nodes[0].X, Nodes[0].Y + Nodes[0].ActualHeight / 2),
+                    //        To = new Point(secondPosition.X, secondPosition.Y),
+                    //        Stroke = Brushes.BlueViolet,
+                    //        StrokeThickness = 3
+                    //    };
+                    //    Connections.Add(currentLine);
+                    //}
+
+
+                }
 
             }
             indexCurrentLine = CurrentConnection.Count() - 1;
+            
+
         }
 
 
         private void GridNetwork_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Up left mouse on network canvas");
-            var clickPosition = e.GetPosition(net_canvas);
-            Debug.WriteLine("Up position: " + clickPosition.X.ToString() + "," + clickPosition.Y.ToString());
-            secondPosition = clickPosition;
-            if (isDragging == false)
+            if (Connector.CurrentConnection!=null)
             {
-                isDragging = true;
-                Debug.WriteLine("BEGIN making connection");
-                //currentLine = new Line { From = new Point(firstPosition.X, firstPosition.Y), To = new Point(secondPosition.X, secondPosition.Y), Stroke = Brushes.Green, StrokeThickness = 10 };
-            }
-            else
-            {
-                Debug.WriteLine("COMPLETE making connection");
-                isDragging = false;
-
-                Connections.Add(new Line
+                Debug.WriteLine("Up left mouse on network canvas");
+                var clickPosition = e.GetPosition(net_canvas);
+                Debug.WriteLine("Up position: " + clickPosition.X.ToString() + "," + clickPosition.Y.ToString());
+                secondPosition = clickPosition;
+                if (isDragging == false)
                 {
-                    From = new Point(firstPosition.X, firstPosition.Y),
-                    To = new Point(secondPosition.X, secondPosition.Y),
-                    Stroke = Brushes.Red,
-                    StrokeThickness = 3
-                });
+                    isDragging = true;
+                    Debug.WriteLine("BEGIN making connection");
+                    //currentLine = new Line { From = new Point(firstPosition.X, firstPosition.Y), To = new Point(secondPosition.X, secondPosition.Y), Stroke = Brushes.Green, StrokeThickness = 10 };
+                }
+                else
+                {
+                    Debug.WriteLine("COMPLETE making connection");
+                    isDragging = false;
 
-                //drawBezier(new Point(firstPosition.X, firstPosition.Y), new Point(secondPosition.X, firstPosition.Y), new Point(secondPosition.X, secondPosition.Y));
-                //indexCurrentLine = CurrentConnection.Count() - 1;
+                    Connections.Add(new Line
+                    {
+                        From = new Point(firstPosition.X, firstPosition.Y),
+                        To = new Point(secondPosition.X, secondPosition.Y),
+                        Stroke = Brushes.Red,
+                        StrokeThickness = 3
+                    });
+                    Connector.CurrentConnection = null;
+                    //drawBezier(new Point(firstPosition.X, firstPosition.Y), new Point(secondPosition.X, firstPosition.Y), new Point(secondPosition.X, secondPosition.Y));
+                    //indexCurrentLine = CurrentConnection.Count() - 1;
+                }
             }
         }
 
         
         private void GridNetwork_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.Write("Number of CurrentConnection: " + CurrentConnection.Count().ToString());
-            Debug.Write("Number of Connections: " + Connections.Count().ToString());
+            Debug.WriteLine("BEFORE");
+            Debug.WriteLine("Number of CurrentConnection: " + CurrentConnection.Count().ToString());
+            Debug.WriteLine("Number of Connections: " + Connections.Count().ToString());
+            Debug.WriteLine("Number of Nodes: " + Nodes.Count().ToString());
+            foreach (var iNode in Nodes)
+            {
+                Debug.WriteLine("---------------------------------------------------------------");
+                Debug.WriteLine(String.Format("NODE GRAPH     : {0}", iNode.LayerType.ToString()));
+                Debug.WriteLine(String.Format("       ID      : {0}", iNode.ID));
+                Debug.WriteLine(String.Format("       location: ({0},{1})", iNode.X, iNode.Y));
+                Debug.WriteLine(String.Format("       seq_id  : {0}", iNode.seq_id.ToString()));
+                Debug.WriteLine(String.Format("       name    : {0}", iNode.NameLayer.ToString()));
+            }
             Connections.Clear();
             CurrentConnection.Clear();
+            //Nodes.Clear();
+            Debug.WriteLine("AFTER");
+            Debug.WriteLine("Number of CurrentConnection: " + CurrentConnection.Count().ToString());
+            Debug.WriteLine("Number of Connections: " + Connections.Count().ToString());
+            Debug.WriteLine("Number of Nodes: " + Nodes.Count().ToString());
             indexCurrentLine = CurrentConnection.Count() - 1;
+            
             //net_canvas.Children.Clear();
         }
         /// <summary>
@@ -166,6 +229,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
         /// <summary>
         /// Add FC
@@ -180,6 +244,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
         /// <summary>
         /// Add Drop Out
@@ -194,6 +259,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
         /// <summary>
         /// Add Rnn
@@ -208,6 +274,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
         /// <summary>
         /// Add Flatten
@@ -222,6 +289,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
         /// <summary>
         /// Add Pooling
@@ -236,6 +304,7 @@ namespace WpfApp1
             newNode.seq_id = numberOfNode + 1;
             numberOfNode++;
             net_canvas.Children.Add(newNode);
+            Nodes.Add(newNode);
         }
 
     }
